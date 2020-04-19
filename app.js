@@ -1,10 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const config = require('./utils/config');
 const blogRouter = require ('./controllers/blogs')
 const app = express()
 
 
-const mongoUrl = 'mongodb+srv://fullstack:fullstack@cluster0-5uh6a.mongodb.net/bloglist?retryWrites=true&w=majority'
+const mongoUrl = config.MONGODB_URI
 mongoose.connect(mongoUrl, { useNewUrlParser: true })
 
 app.use('/api/blogs', blogRouter)

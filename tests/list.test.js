@@ -1,4 +1,21 @@
 const listHelper = require('../utils/list_helper')
+const mongoose = require('mongoose')
+const supertest = require('supertest')
+const app = require('../app')
+const api = supertest(app)
+const helper = require('./test_helper')
+
+
+const Blog = require('../models/blog')
+
+beforeEach(async () => {
+  await Blog.deleteMany({})
+
+  const blogObjects = helper.initialEntries
+    .map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
+})
 
 //ex 4.3
 test('dummy returns one', () => {
@@ -46,4 +63,21 @@ describe('favorite blog', () => {
       likes: 12,
     })
   })   
+  })
+
+  //ex 4.8
+  test('blogs are returned as json', async () => {
+       await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+  })
+  
+  test('blog item number is 2', async () => {
+    const res = await api.get('/api/blogs')
+    expect(res.body).toHaveLength(2)   
+})
+
+  afterAll(() => {
+    mongoose.connection.close()
   })
