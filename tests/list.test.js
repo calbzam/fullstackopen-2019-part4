@@ -85,8 +85,34 @@ describe('Initial some blog posts saved', () => {
     const blog = res.body[0];
     expect(blog.id).toBeDefined();
   });
-
-  afterAll(() => {
-    mongoose.connection.close()
-  })
 })
+
+//ex 4.10
+describe('create new blog post', () => {
+  test('succeesfully added', async () => {
+    const newBlog = {
+      title: 'carlos blogpost',
+      author: 'carlos',
+      url: 'carlosalba.com',
+      likes: 5
+    };
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogs = await Blog.find({});
+    const totalBlogs = blogs.map(blog => blog.toJSON());
+    
+    expect(totalBlogs.length).toBe(helper.initialEntries.length + 1);
+
+    const titles = totalBlogs.map(b => b.title);
+    expect(titles).toContain('carlos blogpost');
+  });
+})
+
+afterAll(() => {
+  mongoose.connection.close();
+});
