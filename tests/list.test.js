@@ -130,6 +130,24 @@ describe('create new blog post', () => {
   })
 })
 
+//test ex 4.13
+describe('delete a blog post', () => {
+  test('succeedfully delete', async () => {
+
+    const initialBlogs = await helper.blogsInDb();
+    const blogToDelete = initialBlogs[0];
+
+    await api.delete(`/api/blogs/${blogToDelete.id}`);
+    
+    const finalBlogs = await helper.blogsInDb();
+
+    expect(finalBlogs.length).toBe(initialBlogs.length - 1);
+
+    const titles = finalBlogs.map(n => n.title);
+    expect(titles).not.toContain(blogToDelete.title);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
