@@ -148,6 +148,25 @@ describe('delete a blog post', () => {
   });
 });
 
+//test ex 4.14
+describe('update blog post', () => {
+  test('successfully update', async () => {
+    const initialBlogs = await helper.blogsInDb();
+    const blogToUpdate = initialBlogs[0];
+
+    const updatedBlog = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send({})
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    const finalBlogs = await helper.blogsInDb();
+    expect(finalBlogs.length).toBe(initialBlogs.length);
+    expect(updatedBlog.body.likes).toBe(blogToUpdate.likes + 4);
+  });
+});
+
+
 afterAll(() => {
   mongoose.connection.close();
 });
